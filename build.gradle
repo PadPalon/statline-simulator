@@ -1,0 +1,29 @@
+plugins {
+    id 'java'
+    id 'idea'
+}
+
+group = 'ch.neukom.bober'
+version = '0.0.1'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation "com.google.guava:guava:${guavaVersion}"
+    implementation "com.google.code.gson:gson:${gsonVersion}"
+
+    testImplementation 'org.testng:testng:7.8.0'
+    testImplementation 'com.google.truth:truth:1.4.4'
+}
+
+test {
+    useTestNG()
+}
