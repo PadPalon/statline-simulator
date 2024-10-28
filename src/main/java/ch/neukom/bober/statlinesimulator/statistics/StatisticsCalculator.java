@@ -1,15 +1,24 @@
 package ch.neukom.bober.statlinesimulator.statistics;
 
+import ch.neukom.bober.statlinesimulator.data.Army;
+import ch.neukom.bober.statlinesimulator.data.Enhancement;
 import ch.neukom.bober.statlinesimulator.data.Unit;
+
+import java.util.Optional;
+import java.util.Set;
 
 public class StatisticsCalculator {
     private StatisticsCalculator() {}
 
-    public static Statistics calculate(Unit unit) {
-        Integer skill = unit.getSkill();
-        Integer accuracy = unit.getAccuracy();
+    public static Statistics calculate(Army army, Unit unit) {
+        Set<Enhancement> armyEnhancements = Optional.ofNullable(army)
+            .map(Army::armyData)
+            .map(Army.ArmyData::enhancements)
+            .orElse(Set.of());
+        Integer skill = unit.getSkill(armyEnhancements);
+        Integer accuracy = unit.getAccuracy(armyEnhancements);
         float hitChance = calculateHitChance(skill, accuracy);
-        int attackCount = unit.count() * unit.getShots();
+        int attackCount = unit.count() * unit.getShots(armyEnhancements);
         return new Statistics(
             unit,
             hitChance,

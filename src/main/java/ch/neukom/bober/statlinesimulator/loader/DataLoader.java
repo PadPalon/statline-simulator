@@ -40,7 +40,6 @@ public class DataLoader {
             String armyFileName = armyPath.getFileName().toString();
             return new Army(
                 armyFileName,
-                armyData == null || armyData.armyName().isEmpty() ? armyFileName : armyData.armyName(),
                 units,
                 armyData
             );
@@ -65,7 +64,8 @@ public class DataLoader {
         try {
             Attributes attributes = Attributes.loadAttributes(armyDataPath);
             return new Army.ArmyData(
-                attributes.get(Attributes.AttributeLoader.NAME)
+                attributes.get(Attributes.AttributeLoader.NAME),
+                attributes.get(Attributes.AttributeLoader.ENHANCEMENTS)
             );
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -87,7 +87,8 @@ public class DataLoader {
             Attributes attributes = Attributes.loadAttributes(unitPath);
             return new Unit(
                 attributes.get(Attributes.AttributeLoader.NAME),
-                attributes.get(Attributes.AttributeLoader.COUNT)
+                attributes.get(Attributes.AttributeLoader.COUNT),
+                attributes.get(Attributes.AttributeLoader.ENHANCEMENTS)
             );
         } catch (IOException e) {
             throw new RuntimeException(e);

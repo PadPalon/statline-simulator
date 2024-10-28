@@ -8,7 +8,10 @@ import com.google.common.collect.Multimap;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Set;
 import java.util.function.Function;
+
+import static java.util.stream.Collectors.toSet;
 
 public record Attributes(Multimap<String, String> data) {
     public static Attributes loadAttributes(Path dataPath) throws IOException {
@@ -41,7 +44,15 @@ public record Attributes(Multimap<String, String> data) {
 
     public interface AttributeLoader<R> extends Function<Multimap<String, String>, R> {
         AttributeLoader<String> NAME = data -> MultimapUtil.getOnlyValue(data, "NAME").orElse("");
-        AttributeLoader<Integer> COUNT = data -> MultimapUtil.getOnlyValue(data, "COUNT").map(Integer::valueOf).orElse(1);
+        AttributeLoader<Integer> COUNT = data -> MultimapUtil.getOnlyValue(data, "COUNT")
+            .map(Integer::valueOf)
+            .orElse(1);
+        AttributeLoader<Set<Enhancement>> ENHANCEMENTS = data -> data.get("ENHANCEMENT")
+            .stream()
+            .map(String::toUpperCase)
+            .map(id -> id.replace(' ', '_'))
+            .map(EnhancementFactory::fromString)
+            .collect(toSet());
     }
 
     record Attribute(String key, String value) {
