@@ -1,0 +1,28 @@
+.root {
+}
+
+.toolbar {
+    -fx-alignment: center-right;
+}
+
+.button {
+    -fx-border-color: transparent;
+    -fx-background-color: transparent;
+}
+
+.button:hover {
+    -fx-background-color: derive(-color-bg-default, 20%);
+}
+
+.button:pressed {
+    -fx-background-color: derive(-color-bg-default, -40%);
+}
+
+.font-icon-button {
+    -fx-icon-size: 25px;
+}
+
+
+.unit-panel:hover {
+    -fx-background-color: derive(-color-bg-default, 20%);
+}
