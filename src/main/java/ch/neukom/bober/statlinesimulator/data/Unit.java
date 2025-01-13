@@ -1,5 +1,6 @@
 package ch.neukom.bober.statlinesimulator.data;
 
+import ch.neukom.bober.statlinesimulator.display.Printable;
 import ch.neukom.bober.statlinesimulator.properties.Properties;
 import ch.neukom.bober.statlinesimulator.util.UnsupportedCombiner;
 

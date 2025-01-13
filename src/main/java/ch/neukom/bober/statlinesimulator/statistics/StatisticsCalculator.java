@@ -3,12 +3,14 @@ package ch.neukom.bober.statlinesimulator.statistics;
 import ch.neukom.bober.statlinesimulator.data.Army;
 import ch.neukom.bober.statlinesimulator.data.Enhancement;
 import ch.neukom.bober.statlinesimulator.data.Unit;
+import ch.neukom.bober.statlinesimulator.display.Printable;
 
 import java.util.Optional;
 import java.util.Set;
 
 public class StatisticsCalculator {
-    private StatisticsCalculator() {}
+    private StatisticsCalculator() {
+    }
 
     public static Statistics calculate(Army army, Unit unit) {
         Set<Enhancement> armyEnhancements = Optional.ofNullable(army)
@@ -41,5 +43,20 @@ public class StatisticsCalculator {
         float hitChancePerUnit,
         int attackCount,
         float averageHitsPerAttack
-    ) {}
+    ) implements Printable {
+        @Override
+        public String print() {
+            return String.format(
+                """
+                    %s
+                    - Shot Count: %s
+                    - Hit Chance Per Shot: %.2f%%
+                    - Average Hits Per Attack: %.0f""",
+                unit().print(),
+                attackCount(),
+                hitChancePerUnit() * 100,
+                Math.floor(averageHitsPerAttack())
+            );
+        }
+    }
 }

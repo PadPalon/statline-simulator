@@ -1,4 +1,4 @@
-package ch.neukom.bober.statlinesimulator.data;
+package ch.neukom.bober.statlinesimulator.display;
 
 public interface Printable {
     String print();
