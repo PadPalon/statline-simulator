@@ -3,8 +3,13 @@ package ch.neukom.bober.statlinesimulator.data;
 public class EnhancementFactory {
     private EnhancementFactory() {}
 
-    private static final Enhancement NO_OP = new Enhancement() {};
+    private static final Enhancement NO_OP = () -> "Nothing";
     private static final Enhancement SCOPE = new Enhancement() {
+        @Override
+        public String getName() {
+            return "Scope";
+        }
+
         @Override
         public Integer adjustAccuracy(Integer accuracy) {
             return accuracy + 2;
@@ -12,11 +17,21 @@ public class EnhancementFactory {
     };
     private static final Enhancement FULL_AUTO = new Enhancement() {
         @Override
+        public String getName() {
+            return "Full Auto";
+        }
+
+        @Override
         public Integer adjustShots(Integer shots) {
             return shots * 5;
         }
     };
     private static final Enhancement UNTRAINED = new Enhancement() {
+        @Override
+        public String getName() {
+            return "Untrained";
+        }
+
         @Override
         public Integer adjustSkill(Integer skill) {
             return skill - 1;

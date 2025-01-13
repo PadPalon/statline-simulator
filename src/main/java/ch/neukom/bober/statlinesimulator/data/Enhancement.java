@@ -1,6 +1,8 @@
 package ch.neukom.bober.statlinesimulator.data;
 
 public interface Enhancement {
+    String getName();
+
     default Integer adjustSkill(Integer skill) {
         return skill;
     }
