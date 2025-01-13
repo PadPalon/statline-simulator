@@ -8,10 +8,13 @@ import ch.neukom.bober.statlinesimulator.properties.Properties;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
+
+import static java.nio.file.StandardWatchEventKinds.*;
 
 public class DataLoader {
     public Map<String, Army> loadOnce() {
@@ -28,6 +31,28 @@ public class DataLoader {
             }
 
             return armies;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public ArmyWatcher watchForChanges() {
+        try {
+            Path dataPath = Path.of(Properties.get().dataPath());
+            if (!Files.isDirectory(dataPath)) {
+                Files.createDirectory(dataPath);
+            }
+
+            WatchService watchService = FileSystems.getDefault().newWatchService();
+            WatchKey watchKey = dataPath.register(watchService, ENTRY_CREATE, ENTRY_MODIFY, ENTRY_DELETE);
+            Files.walkFileTree(dataPath, new SimpleFileVisitor<>() {
+                @Override
+                public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attributes) throws IOException {
+                    dir.register(watchService, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
+                    return FileVisitResult.CONTINUE;
+                }
+            });
+            return new ArmyWatcher(watchKey, this::loadOnce);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
