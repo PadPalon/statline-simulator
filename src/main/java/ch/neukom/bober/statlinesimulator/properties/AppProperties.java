@@ -9,13 +9,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-public class Properties {
-    private static final Map<String, Properties> instances = new HashMap<>();
+public class AppProperties {
+    private static final Map<String, AppProperties> instances = new HashMap<>();
 
     private final BoberProperties boberProperties;
 
     public static BoberProperties get() {
-        InputStream propertiesStream = Properties.class.getResourceAsStream("bober.properties");
+        InputStream propertiesStream = AppProperties.class.getResourceAsStream("bober.properties");
         if (propertiesStream == null) {
             throw new IllegalStateException("bober.properties not found");
         } else {
@@ -28,14 +28,14 @@ public class Properties {
             try {
                 java.util.Properties properties = new java.util.Properties();
                 properties.load(propertiesStream);
-                return new Properties(properties);
+                return new AppProperties(properties);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }).getProperties();
     }
 
-    public Properties(java.util.Properties properties) {
+    public AppProperties(java.util.Properties properties) {
         this.boberProperties = new BoberProperties(
             properties.getProperty("dataPath", "boberData"),
             getBaseCharacteristic(properties, UnitIntegerCharacteristic.HEALTH),

@@ -3,6 +3,7 @@ package ch.neukom.bober.statlinesimulator.gui;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -19,8 +20,9 @@ public class GuiHelper {
     public static void configureStage(Stage stage,
                                       Parent parent,
                                       String name,
-                                      EventHandler<ActionEvent> closeHandler) {
-        HBox menuBar = GuiHelper.createMenuBar(stage, closeHandler);
+                                      EventHandler<ActionEvent> closeHandler,
+                                      Node... additionalMenuBarItems) {
+        HBox menuBar = GuiHelper.createMenuBar(stage, closeHandler, additionalMenuBarItems);
         VBox root = new VBox(menuBar, parent);
         root.setPadding(new Insets(0, 5, 0, 5));
         Scene scene = new Scene(root, 600, 600);
@@ -31,7 +33,7 @@ public class GuiHelper {
         stage.setOnCloseRequest(event -> System.exit(0));
     }
 
-    static HBox createMenuBar(Stage stage, EventHandler<ActionEvent> closeHandler) {
+    static HBox createMenuBar(Stage stage, EventHandler<ActionEvent> closeHandler, Node... additionalMenuBarItems) {
         FontIcon icon = new FontIcon("mdal-close");
         icon.getStyleClass().add("font-icon-button");
         Button closeMenuItem = new Button("", icon);
@@ -40,6 +42,7 @@ public class GuiHelper {
 
         HBox menuBar = new HBox();
         menuBar.getStyleClass().add("toolbar");
+        menuBar.getChildren().addAll(additionalMenuBarItems);
         menuBar.getChildren().add(closeMenuItem);
         menuBar.setOnMousePressed(pressEvent -> menuBar.setOnMouseDragged(dragEvent -> {
             stage.setX(dragEvent.getScreenX() - pressEvent.getSceneX());

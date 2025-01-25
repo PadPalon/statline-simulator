@@ -5,6 +5,7 @@ import ch.neukom.bober.statlinesimulator.data.Army;
 import ch.neukom.bober.statlinesimulator.data.Army.ArmyData;
 import ch.neukom.bober.statlinesimulator.data.Unit;
 import ch.neukom.bober.statlinesimulator.loader.ArmyWatcher;
+import ch.neukom.bober.statlinesimulator.serializer.ArmySerializer;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
@@ -26,9 +27,11 @@ import java.util.function.BiConsumer;
 
 public class MainGui extends Application {
     private final ArmyWatcher armyWatcher;
+    private final ArmySerializer armySerializer;
 
-    public MainGui(ArmyWatcher armyWatcher) {
+    public MainGui(ArmyWatcher armyWatcher, ArmySerializer armySerializer) {
         this.armyWatcher = armyWatcher;
+        this.armySerializer = armySerializer;
     }
 
     @Override
@@ -45,11 +48,16 @@ public class MainGui extends Application {
             contentRoot.getChildren().add(createArmyCreatePanel());
         }));
 
+        Button saveButton = new Button("Save");
+        saveButton.setOnMouseClicked(event -> {
+            armySerializer.write(armyWatcher.getArmies().values());
+        });
         GuiHelper.configureStage(
             stage,
             contentRoot,
             "Project Bober Statline Simulator",
-            actionEvent -> System.exit(0)
+            actionEvent -> System.exit(0),
+            saveButton
         );
         stage.show();
     }

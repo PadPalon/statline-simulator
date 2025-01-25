@@ -1,7 +1,7 @@
 package ch.neukom.bober.statlinesimulator.data;
 
 import ch.neukom.bober.statlinesimulator.display.Printable;
-import ch.neukom.bober.statlinesimulator.properties.Properties;
+import ch.neukom.bober.statlinesimulator.properties.AppProperties;
 import ch.neukom.bober.statlinesimulator.util.UnsupportedCombiner;
 
 import java.util.Set;
@@ -22,7 +22,7 @@ public record Unit(String unitName, int count, Set<Enhancement> enhancements) im
     public int getSkill(Set<Enhancement> armyEnhancements) {
         return applyEnhancements(
             armyEnhancements,
-            Properties.get().baseSkill(),
+            AppProperties.get().baseSkill(),
             enhancement -> enhancement::adjustSkill
         );
     }
@@ -30,7 +30,7 @@ public record Unit(String unitName, int count, Set<Enhancement> enhancements) im
     public int getAccuracy(Set<Enhancement> armyEnhancements) {
         return applyEnhancements(
             armyEnhancements,
-            Properties.get().baseAccuracy(),
+            AppProperties.get().baseAccuracy(),
             enhancement -> enhancement::adjustAccuracy
         );
     }
@@ -38,7 +38,7 @@ public record Unit(String unitName, int count, Set<Enhancement> enhancements) im
     public int getShots(Set<Enhancement> armyEnhancements) {
         return applyEnhancements(
             armyEnhancements,
-            Properties.get().baseShots(),
+            AppProperties.get().baseShots(),
             enhancement -> enhancement::adjustShots
         );
     }

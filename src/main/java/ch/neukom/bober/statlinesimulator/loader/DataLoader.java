@@ -3,7 +3,7 @@ package ch.neukom.bober.statlinesimulator.loader;
 import ch.neukom.bober.statlinesimulator.data.Army;
 import ch.neukom.bober.statlinesimulator.data.Attributes;
 import ch.neukom.bober.statlinesimulator.data.Unit;
-import ch.neukom.bober.statlinesimulator.properties.Properties;
+import ch.neukom.bober.statlinesimulator.properties.AppProperties;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -21,7 +21,7 @@ public class DataLoader {
         try {
             Map<String, Army> armies = new HashMap<>();
 
-            Path dataPath = Path.of(Properties.get().dataPath());
+            Path dataPath = Path.of(AppProperties.get().dataPath());
             if (!Files.isDirectory(dataPath)) {
                 Files.createDirectory(dataPath);
             }
@@ -38,7 +38,7 @@ public class DataLoader {
 
     public ArmyWatcher watchForChanges() {
         try {
-            Path dataPath = Path.of(Properties.get().dataPath());
+            Path dataPath = Path.of(AppProperties.get().dataPath());
             if (!Files.isDirectory(dataPath)) {
                 Files.createDirectory(dataPath);
             }
