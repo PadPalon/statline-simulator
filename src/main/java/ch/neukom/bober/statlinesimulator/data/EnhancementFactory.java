@@ -1,5 +1,7 @@
 package ch.neukom.bober.statlinesimulator.data;
 
+import java.util.List;
+
 public class EnhancementFactory {
     private EnhancementFactory() {}
 
@@ -45,5 +47,13 @@ public class EnhancementFactory {
             case "UNTRAINED" -> UNTRAINED;
             default -> NO_OP;
         };
+    }
+
+    public static List<Enhancement> getUnitEnhancements() {
+        return List.of(
+            SCOPE,
+            FULL_AUTO,
+            UNTRAINED
+        );
     }
 }

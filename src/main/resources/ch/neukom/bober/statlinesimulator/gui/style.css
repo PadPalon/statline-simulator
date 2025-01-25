@@ -8,6 +8,7 @@
 .button {
     -fx-border-color: transparent;
     -fx-background-color: transparent;
+    -fx-underline: true;
 }
 
 .button:hover {
@@ -20,9 +21,4 @@
 
 .font-icon-button {
     -fx-icon-size: 25px;
-}
-
-
-.unit-panel:hover {
-    -fx-background-color: derive(-color-bg-default, 20%);
 }

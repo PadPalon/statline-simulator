@@ -9,15 +9,14 @@ import ch.neukom.bober.statlinesimulator.serializer.ArmySerializer;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
-import javafx.scene.layout.Border;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
 import java.util.List;
@@ -49,9 +48,7 @@ public class MainGui extends Application {
         }));
 
         Button saveButton = new Button("Save");
-        saveButton.setOnMouseClicked(event -> {
-            armySerializer.write(armyWatcher.getArmies().values());
-        });
+        saveButton.setOnMouseClicked(event -> armySerializer.write(armyWatcher.getArmies().values()));
         GuiHelper.configureStage(
             stage,
             contentRoot,
@@ -68,11 +65,10 @@ public class MainGui extends Application {
             ObservableList<Node> children = armyContent.getChildren();
 
             List<Unit> units = army.units();
-            if (!units.isEmpty()) {
-                VBox unitsContent = new VBox();
-                units.stream().map(unit -> createUnitPanel(unit, army)).forEach(unitsContent.getChildren()::add);
-                children.add(new TitledPane("Units", unitsContent));
-            }
+            VBox unitsContent = new VBox();
+            units.stream().map(unit -> createUnitPanel(unit, army)).forEach(unitsContent.getChildren()::add);
+            unitsContent.getChildren().add(createUnitCreatePanel(army));
+            children.add(new TitledPane("Units", unitsContent));
 
             army.getArmyData(ArmyData::enhancements)
                 .filter(enhancements -> !enhancements.isEmpty())
@@ -89,14 +85,24 @@ public class MainGui extends Application {
 
             TitledPane armyRoot = new TitledPane(army.getArmyName(), armyContent);
             armyRoot.setBorder(Border.EMPTY);
+
+            Button deleteButton = new Button("Delete army");
+            armyContent.getChildren().add(deleteButton);
+            deleteButton.setOnMouseClicked(event -> {
+                root.getChildren().remove(armyRoot);
+                armyWatcher.getArmies().remove(army.armyId());
+            });
+
             root.getChildren().add(armyRoot);
         };
     }
 
     private Node createArmyCreatePanel() {
         HBox content = new HBox();
+
         TextField nameField = new TextField("Army Name");
         content.getChildren().add(nameField);
+
         Button createButton = new Button("Create army");
         createButton.setOnMouseClicked(event -> {
             Army newArmy = new Army(
@@ -107,15 +113,64 @@ public class MainGui extends Application {
             armyWatcher.addArmy(newArmy);
         });
         content.getChildren().add(createButton);
+
         return content;
     }
 
     private Pane createUnitPanel(Unit unit, Army army) {
-        VBox unitRoot = new VBox();
+        HBox unitRoot = new HBox();
         unitRoot.getStyleClass().add("unit-panel");
-        unitRoot.setOnMouseClicked(mouseEvent -> new UnitGui(army, unit).show());
-        unitRoot.getChildren().add(new Label(unit.unitName()));
+
+        Label unitLabel = new Label("%s (%s)".formatted(unit.unitName(), unit.count()));
+        unitRoot.getChildren().add(unitLabel);
+
+        HBox buttonRoot = new HBox();
+        HBox.setHgrow(buttonRoot, Priority.ALWAYS);
+        buttonRoot.setAlignment(Pos.CENTER_RIGHT);
+
+        Button editButton = new Button("Edit unit");
+        editButton.setOnMouseClicked(mouseEvent -> new UnitGui(
+            army,
+            unit,
+            updatedUnit -> armyWatcher.addArmy(army.replaceUnit(unit, updatedUnit))
+        ).show());
+        buttonRoot.getChildren().add(editButton);
+
+        Button deleteButton = new Button("Delete unit");
+        deleteButton.setOnMouseClicked(event -> armyWatcher.addArmy(army.withoutUnit(unit)));
+        buttonRoot.getChildren().add(deleteButton);
+
+        unitRoot.getChildren().add(buttonRoot);
         return unitRoot;
+    }
+
+    private Node createUnitCreatePanel(Army army) {
+        VBox content = new VBox();
+        content.setSpacing(GuiHelper.getDefaultSpacing());
+
+        TextField nameField = new TextField("Unit Name");
+        content.getChildren().add(nameField);
+
+        HBox countBox = new HBox();
+        countBox.setPadding(new Insets(0, 0, 0, GuiHelper.getDefaultSpacing()));
+        countBox.setSpacing(GuiHelper.getDefaultSpacing());
+        content.getChildren().add(countBox);
+
+        Label countLabel = new Label("Unit Count");
+        countLabel.prefHeightProperty().bind(countBox.heightProperty());
+        countBox.getChildren().add(countLabel);
+
+        TextField countField = new TextField("1");
+        countBox.getChildren().add(countField);
+
+        Button createButton = new Button("Create unit");
+        createButton.setOnMouseClicked(event -> {
+            Unit unit = new Unit(UUID.randomUUID().toString(), nameField.getText(), Integer.parseInt(countField.getText()), Set.of());
+            armyWatcher.addArmy(army.withUnit(unit));
+        });
+        countBox.getChildren().add(createButton);
+
+        return content;
     }
 
     public void run() {

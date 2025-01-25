@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public record Army(String armyId,
                    List<Unit> units,
@@ -26,6 +27,30 @@ public record Army(String armyId,
             return Optional.empty();
         }
         return Optional.ofNullable(loader.apply(armyData));
+    }
+
+    public Army withUnit(Unit unit) {
+        List<Unit> newUnits = Stream.concat(
+            units.stream(),
+            Stream.of(unit)
+        ).toList();
+        return new Army(armyId, newUnits, armyData);
+    }
+
+    public Army replaceUnit(Unit toUpdate, Unit updatedUnit) {
+        List<Unit> newUnits = units.stream().map(unit -> {
+            if (unit.equals(toUpdate)) {
+                return updatedUnit;
+            } else {
+                return unit;
+            }
+        }).toList();
+        return new Army(armyId, newUnits, armyData);
+    }
+
+    public Army withoutUnit(Unit unitToRemove) {
+        List<Unit> newUnits = units.stream().filter(unit -> !unit.equals(unitToRemove)).toList();
+        return new Army(armyId, newUnits, armyData);
     }
 
     @Override

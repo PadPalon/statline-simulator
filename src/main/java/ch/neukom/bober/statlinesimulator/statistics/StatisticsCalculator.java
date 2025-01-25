@@ -17,6 +17,10 @@ public class StatisticsCalculator {
             .map(Army::armyData)
             .map(Army.ArmyData::enhancements)
             .orElse(Set.of());
+        return calculate(unit, armyEnhancements);
+    }
+
+    public static Statistics calculate(Unit unit, Set<Enhancement> armyEnhancements) {
         Integer skill = unit.getSkill(armyEnhancements);
         Integer accuracy = unit.getAccuracy(armyEnhancements);
         float hitChance = calculateHitChance(skill, accuracy);

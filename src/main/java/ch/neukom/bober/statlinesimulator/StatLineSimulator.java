@@ -9,7 +9,7 @@ public class StatLineSimulator {
     public static void main(String[] args) {
         DataLoader dataLoader = new DataLoader();
         ArmyWatcher armyWatcher = dataLoader.watchForChanges();
-        ArmySerializer armySerializer = new ArmySerializer();
+        ArmySerializer armySerializer = new ArmySerializer(armyWatcher::withoutSynchronization);
         new MainGui(armyWatcher, armySerializer).run();
     }
 }

@@ -110,7 +110,9 @@ public class DataLoader {
     private Unit handleUnitPath(Path unitPath) {
         try {
             Attributes attributes = Attributes.loadAttributes(unitPath);
+            String filename = unitPath.getFileName().toString();
             return new Unit(
+                filename.substring(0, filename.indexOf(".bober")),
                 attributes.get(Attributes.AttributeLoader.NAME),
                 attributes.get(Attributes.AttributeLoader.COUNT),
                 attributes.get(Attributes.AttributeLoader.ENHANCEMENTS)

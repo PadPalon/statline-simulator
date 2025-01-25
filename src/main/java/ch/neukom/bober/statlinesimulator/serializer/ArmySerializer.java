@@ -12,27 +12,42 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 public class ArmySerializer {
+    private final Consumer<Runnable> withoutSynchronization;
+
+    public ArmySerializer(Consumer<Runnable> withoutSynchronization) {
+        this.withoutSynchronization = withoutSynchronization;
+    }
+
     public void write(Iterable<Army> armies) {
-        try {
-            Path dataPath = Path.of(AppProperties.get().dataPath());
-            for (Army army : armies) {
-                Path armyPath = dataPath.resolve(army.getArmyName());
-                FileUtils.deleteDirectory(armyPath.toFile());
-                Files.createDirectory(armyPath);
-                Path armyBoberPath = armyPath.resolve("army.bober");
-                Files.createFile(armyBoberPath);
-                Files.write(armyBoberPath, buildArmyFile(army));
-                for (Unit unit : army.units()) {
-                    Path unitBoberPath = armyPath.resolve("%s.bober".formatted(unit.unitName()));
-                    Files.write(unitBoberPath, builderUnitFile(unit));
+        withoutSynchronization.accept(() -> {
+            try {
+                Path dataPath = Path.of(AppProperties.get().dataPath());
+                try (Stream<Path> toDelete = Files.list(dataPath)) {
+                    for (Path path : toDelete.toList()) {
+                        FileUtils.deleteDirectory(path.toFile());
+                    }
                 }
+
+                for (Army army : armies) {
+                    Path armyPath = dataPath.resolve(army.armyId());
+                    FileUtils.deleteDirectory(armyPath.toFile());
+                    Files.createDirectory(armyPath);
+                    Path armyBoberPath = armyPath.resolve("army.bober");
+                    Files.createFile(armyBoberPath);
+                    Files.write(armyBoberPath, buildArmyFile(army));
+                    for (Unit unit : army.units()) {
+                        Path unitBoberPath = armyPath.resolve("%s.bober".formatted(unit.unitId()));
+                        Files.write(unitBoberPath, builderUnitFile(unit));
+                    }
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        });
     }
 
     private List<String> buildArmyFile(Army army) {

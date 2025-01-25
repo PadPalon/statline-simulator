@@ -8,7 +8,9 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-public record Unit(String unitName, int count, Set<Enhancement> enhancements) implements Printable {
+import static java.util.stream.Collectors.toSet;
+
+public record Unit(String unitId, String unitName, int count, Set<Enhancement> enhancements) implements Printable {
     @Override
     public String toString() {
         return unitName;
@@ -41,6 +43,21 @@ public record Unit(String unitName, int count, Set<Enhancement> enhancements) im
             AppProperties.get().baseShots(),
             enhancement -> enhancement::adjustShots
         );
+    }
+
+    public Unit withEnhancement(Enhancement enhancement) {
+        Set<Enhancement> newEnhancements = Stream.concat(
+            enhancements().stream(),
+            Stream.of(enhancement)
+        ).collect(toSet());
+        return new Unit(unitId, unitName, count, newEnhancements);
+    }
+
+    public Unit withoutEnhancement(Enhancement enhancementToRemove) {
+        Set<Enhancement> newEnhancements = enhancements().stream()
+            .filter(enhancement -> !enhancement.equals(enhancementToRemove))
+            .collect(toSet());
+        return new Unit(unitId, unitName, count, newEnhancements);
     }
 
     private <R> R applyEnhancements(
